@@ -11,7 +11,7 @@
 #define PIN_14_PWM 10   // CD4051 pin 14  (Brighter)
 #define PIN_15_PWM 11   // CD4051 pin 15  (Very bright)
 
-// ================= BRIGHTNESS VALUES =====================
+
 #define PWM_12 40
 #define PWM_13 100
 #define PWM_14 180
@@ -23,7 +23,7 @@ void selectChannel(uint8_t channel)
     digitalWrite(SEL_B, (channel >> 1) & 0x01);   // B = bit1
 }
 
-// ================= SETUP ===============================
+
 void setup()
 {
     Serial.begin(9600);
