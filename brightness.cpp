@@ -1,6 +1,6 @@
 #include <Arduino.h>
 // to use the multiplexer CD4051
-// ================= CD4051 SELECTION PINS =================
+
 #define SEL_A 2   // CD4051 pin 11
 #define SEL_B 3   // CD4051 pin 10
 // CD4051 pin 9 (C) is tied to GND
@@ -17,7 +17,6 @@
 #define PWM_14 180
 #define PWM_15 255
 
-// ================= FUNCTION ===============================
 void selectChannel(uint8_t channel)
 {
     digitalWrite(SEL_A, channel & 0x01);          // A = bit0
