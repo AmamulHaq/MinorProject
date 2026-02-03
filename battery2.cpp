@@ -51,7 +51,7 @@ void loop() {
   Serial.print(voltage8, 2);
   Serial.println(" V");
 
-  digitalWrite(LED8_PIN, LOW);   // Turn OFF D8
+  digitalWrite(LED8_PIN, LOW);   
 
   delay(2000);
 }
