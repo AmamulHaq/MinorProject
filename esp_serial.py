@@ -10,4 +10,4 @@ while( port.isOpen()):
     elif(data == 0):
         port.write(str.encode('0'))
     else:
-        print('Invalid input!!!!')
+        print('Invalid input!!!!')  
