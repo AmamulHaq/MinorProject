@@ -1,107 +1,110 @@
-#include <WiFi.h>
-#include <HTTPClient.h>
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define ANALOG_PIN 35
-
-// OLED settings
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// WiFi credentials
-const char* ssid = "God Father";
-const char* password = "#godfather786";
+// ESP32 pins
+#define LED1_PIN 25
+#define LED2_PIN 26
+#define ANALOG_PIN 34
 
-// Flask server URL
-const char* serverUrl = "http://192.168.31.8:5000/insert_voltage";
+const float referenceVoltage = 3.3;
 
-void setup() {
+void setup()
+{
 
   Serial.begin(115200);
 
-  // Start OLED I2C
-  Wire.begin(21,22);
+  pinMode(LED1_PIN, OUTPUT);
+  pinMode(LED2_PIN, OUTPUT);
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){
+  // Start I2C for OLED
+  Wire.begin(21, 22);
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  {
     Serial.println("OLED not found");
-    while(true);
+    while (true)
+      ;
   }
 
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
-
-  // Connect WiFi
-  WiFi.begin(ssid, password);
-
   display.setTextSize(1);
-  display.setCursor(0,0);
-  display.println("Connecting WiFi...");
-  display.display();
-
-  Serial.print("Connecting to WiFi");
-
-  while(WiFi.status() != WL_CONNECTED){
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("\nConnected!");
-
-  display.clearDisplay();
-  display.setCursor(0,0);
-  display.println("WiFi Connected");
-  display.display();
-  delay(2000);
 }
 
-void loop() {
+void showData(String led1, String led2, int adcValue, float voltage)
+{
 
-  int sensorValue = analogRead(ANALOG_PIN);
-
-  Serial.print("Analog value: ");
-  Serial.println(sensorValue);
-
-  // -------- OLED DISPLAY --------
   display.clearDisplay();
 
-  display.setTextSize(1);
-  display.setCursor(0,0);
-  display.println("ESP32 Analog Monitor");
+  display.setCursor(0, 0);
+  display.print("LED1: ");
+  display.println(led1);
 
-  display.setCursor(0,20);
-  display.print("ADC Value:");
+  display.print("LED2: ");
+  display.println(led2);
 
-  display.setTextSize(3);
-  display.setCursor(0,35);
-  display.println(sensorValue);
+  display.print("ADC: ");
+  display.println(adcValue);
+
+  display.print("Voltage: ");
+  display.print(voltage, 2);
+  display.println(" V");
 
   display.display();
+}
 
-  // -------- SEND DATA TO SERVER --------
-  if (WiFi.status() == WL_CONNECTED) {
+void loop()
+{
 
-    HTTPClient http;
+  // LED1 ON
+  digitalWrite(LED1_PIN, HIGH);
+  digitalWrite(LED2_PIN, LOW);
 
-    String url = String(serverUrl) + "?voltage=" + String(sensorValue);
+  unsigned long startTime = millis();
 
-    http.begin(url);
+  while (millis() - startTime < 5000)
+  {
 
-    int httpResponseCode = http.GET();
+    int adcValue = analogRead(ANALOG_PIN);
+    float voltage = (adcValue * referenceVoltage) / 4095.0;
 
-    Serial.print("HTTP Response: ");
-    Serial.println(httpResponseCode);
+    Serial.print("LED1 ON | ADC: ");
+    Serial.print(adcValue);
+    Serial.print(" | Voltage: ");
+    Serial.println(voltage);
 
-    http.end();
+    showData("ON", "OFF", adcValue, voltage);
+
+    delay(1000);
   }
-  else {
-    Serial.println("WiFi Disconnected");
-  }
 
-  delay(5000);
+  // LED2 ON
+  digitalWrite(LED1_PIN, LOW);
+  digitalWrite(LED2_PIN, HIGH);
+
+  startTime = millis();
+
+  while (millis() - startTime < 5000)
+  {
+
+    int adcValue = analogRead(ANALOG_PIN);
+    float voltage = (adcValue * referenceVoltage) / 4095.0;
+
+    Serial.print("LED2 ON | ADC: ");
+    Serial.print(adcValue);
+    Serial.print(" | Voltage: ");
+    Serial.println(voltage);
+
+    showData("OFF", "ON", adcValue, voltage);
+
+    delay(1000);
+  }
 }
