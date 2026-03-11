@@ -1,13 +1,14 @@
 #include <Arduino.h>
-
 #define ANALOG_PIN 35
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600);   // Serial communication
 }
 
 void loop() {
-  int sensorValue = analogRead(ANALOG_PIN);
-  Serial.println(sensorValue);
-  delay(5000);
-}
+  int sensorValue = analogRead(ANALOG_PIN); // read analog input
+
+  Serial.println(sensorValue); // send value to computer
+
+  delay(1000); // small delay for stability
+} 

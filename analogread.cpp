@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#define ANALOG_PIN 34
+#define ANALOG_PIN 35
 
 void setup() {
   Serial.begin(9600);   // Serial communication
