@@ -10,8 +10,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ESP32 pins
-#define LED1_PIN 25
-#define LED2_PIN 26
+#define LED1_PIN 18
+#define LED2_PIN 19
 #define ANALOG_PIN 34
 
 const float referenceVoltage = 3.3;

@@ -10,9 +10,6 @@
             "includePath": [
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/include",
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/src",
-                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPClient/src",
-                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
-                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit SSD1306",
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit GFX Library",
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit BusIO",
@@ -225,6 +222,7 @@
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Ethernet/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/FFat/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
+                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPClient/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPUpdate/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPUpdateServer/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/I2S/src",
@@ -241,6 +239,8 @@
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
+                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                 ""
             ],
@@ -249,9 +249,6 @@
                 "path": [
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/include",
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/src",
-                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPClient/src",
-                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
-                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit SSD1306",
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit GFX Library",
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit BusIO",
@@ -464,6 +461,7 @@
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Ethernet/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/FFat/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
+                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPClient/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPUpdate/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/HTTPUpdateServer/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/I2S/src",
@@ -480,6 +478,8 @@
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/USB/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Update/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
+                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
                     ""
                 ]
