@@ -10,11 +10,6 @@
             "includePath": [
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/include",
                 "C:/Users/mdama/OneDrive/Desktop/MinorProject/src",
-                "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit SSD1306",
-                "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit GFX Library",
-                "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit BusIO",
-                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
-                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
@@ -233,6 +228,7 @@
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/RainMaker/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SD/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SD_MMC/src",
+                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SimpleBLE/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Ticker/src",
@@ -242,6 +238,7 @@
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
+                "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                 ""
             ],
             "browse": {
@@ -249,11 +246,6 @@
                 "path": [
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/include",
                     "C:/Users/mdama/OneDrive/Desktop/MinorProject/src",
-                    "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit SSD1306",
-                    "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit GFX Library",
-                    "C:/Users/mdama/OneDrive/Desktop/MinorProject/.pio/libdeps/esp32dev/Adafruit BusIO",
-                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
-                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
@@ -472,6 +464,7 @@
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/RainMaker/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SD/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SD_MMC/src",
+                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPI/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/SimpleBLE/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Ticker/src",
@@ -481,6 +474,7 @@
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src",
+                    "C:/Users/mdama/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
                     ""
                 ]
             },
