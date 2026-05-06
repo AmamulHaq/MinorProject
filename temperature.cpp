@@ -1,0 +1,28 @@
+#include <DHT.h>
+
+#define DHTPIN 23
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+}
+
+void loop() {
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Sensor read failed!");
+  } else {
+    Serial.print("Temp: ");
+    Serial.print(temperature);
+    Serial.print(" °C  |  Humidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+  }
+
+  delay(2000);  // Required by DHT11 (natural timing)
+}
