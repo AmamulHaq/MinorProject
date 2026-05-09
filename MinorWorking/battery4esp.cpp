@@ -59,7 +59,7 @@ void readVoltage(int &adcVal, float &correctedVoltage) {
   float voltage_at_adc = (adcVal * REF_VOLTAGE) / ADC_MAX;
   float raw_battery = voltage_at_adc * (R1 + R2) / R2;
   correctedVoltage = mapVoltage(raw_battery);
-}
+}// ========== Main Loop – Cycle through 4 LEDs ==========  
 
 // ========== Helper: Update OLED display ==========
 void showData(String led1, String led2, String led3, String led4, int adcValue, float voltage) {
