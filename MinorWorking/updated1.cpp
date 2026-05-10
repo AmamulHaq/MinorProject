@@ -3,6 +3,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 // ========== OLED Settings ==========
 #define SCREEN_WIDTH  128
@@ -25,6 +27,13 @@ DHT dht(DHTPIN, DHTTYPE);
 // ========== Alert Output Pins ==========
 #define ALERT_PIN1  2
 #define ALERT_PIN2  19
+
+// ========== WiFi Credentials ==========
+const char* ssid     = "God Father";        // change to your WiFi name
+const char* password = "#godfather786";    // change to your WiFi password
+
+// ========== Flask Server URL ==========
+const char* serverUrl = "http://192.168.31.8:5000/insert";  // change IP to your server
 
 // ========== Measurement Constants ==========
 #define NUM_BATTERIES        4
@@ -152,6 +161,29 @@ float measureCumulativeVoltage(int batteryPin, const char* name) {
   return average;
 }
 
+// ========== Send data to Flask server ==========
+void sendToServer(float b1, float b2, float b3, float b4, float total, float temp) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = String(serverUrl) + "?B1=" + String(b1, 3) +
+                 "&B2=" + String(b2, 3) +
+                 "&B3=" + String(b3, 3) +
+                 "&B4=" + String(b4, 3) +
+                 "&TotalVoltage=" + String(total, 3) +
+                 "&Temp=" + String(temp, 1);
+    http.begin(url);
+    int httpCode = http.GET();
+    if (httpCode > 0) {
+      Serial.printf("HTTP GET returned %d\n", httpCode);
+    } else {
+      Serial.printf("HTTP GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
+  }
+}
+
 // ========== Display final summary (individual voltages + net pack) ==========
 void displaySummary(float individual[], float netPack) {
   display.clearDisplay();
@@ -201,6 +233,15 @@ void setup() {
 
   dht.begin();
   updateDHT();
+
+  // Connect to WiFi
+  Serial.print("Connecting to WiFi");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected. IP address: " + WiFi.localIP().toString());
 }
 
 // ========== Main Loop ==========
@@ -218,14 +259,16 @@ void loop() {
   individual[0] = cumulative[0];
   for (int i = 1; i < NUM_BATTERIES; i++) {
     individual[i] = cumulative[i] - cumulative[i-1];
-    if (individual[i] < 0) individual[i] = 0.0;   // clamp negative
+    if (individual[i] < 0) individual[i] = 0.0;
   }
 
-  // Corrected: sum of individual voltages
   float netPack = 0;
   for (int i = 0; i < NUM_BATTERIES; i++) netPack += individual[i];
 
-  // Print results to Serial
+  // ----- Send data to database via Flask -----
+  sendToServer(individual[0], individual[1], individual[2], individual[3], netPack, currentTemp);
+
+  // ----- Print to Serial -----
   Serial.println("\n--- Individual Battery Voltages ---");
   for (int i = 0; i < NUM_BATTERIES; i++) {
     Serial.printf("B%d = %.3f V\n", i+1, individual[i]);
@@ -233,7 +276,7 @@ void loop() {
   Serial.printf("Net Pack = %.3f V\n", netPack);
   Serial.println();
 
-  // ----- Show summary on OLED for DISPLAY_DURATION_MS -----
+  // ----- Show summary on OLED for 5 seconds -----
   unsigned long displayStart = millis();
   while (millis() - displayStart < DISPLAY_DURATION_MS) {
     updateDHT();

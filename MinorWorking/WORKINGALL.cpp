@@ -3,8 +3,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
 
 // ========== OLED Settings ==========
 #define SCREEN_WIDTH  128
@@ -28,23 +26,16 @@ DHT dht(DHTPIN, DHTTYPE);
 #define ALERT_PIN1  2
 #define ALERT_PIN2  19
 
-// ========== WiFi Credentials ==========
-const char* ssid     = "God Father";
-const char* password = "#godfather786";
-
-// ========== Flask Server URL ==========
-const char* serverUrl = "http://192.168.31.8:5000/insert";
-
 // ========== Measurement Constants ==========
 #define NUM_BATTERIES        4
-#define SAMPLES_PER_MEASURE  4
-#define SAMPLE_DELAY_MS      500
-const float MISSING_BATTERY_VOLTAGE = 0.68;
+#define SAMPLES_PER_MEASURE  4          // number of readings averaged per battery
+#define SAMPLE_DELAY_MS      500        // delay between samples (ms)
+const float MISSING_BATTERY_VOLTAGE = 0.68;  // voltage when no battery connected
 const float MISSING_TOLERANCE       = 0.05;
 const unsigned long SWITCH_DELAY        = 100;
 const unsigned long POST_ON_SETTLE      = 100;
 const unsigned long DHT_INTERVAL        = 2000;
-const unsigned long DISPLAY_DURATION_MS = 5000;
+const unsigned long DISPLAY_DURATION_MS = 5000;   // how long to show summary
 
 // ========== Voltage Divider & ADC ==========
 const float REF_VOLTAGE   = 3.3;
@@ -81,9 +72,6 @@ float currentTemp = 0.0;
 float currentHum = 0.0;
 unsigned long lastDHTRead = 0;
 
-// ========== Database status message ==========
-String dbStatus = "Connecting BMoS...";
-
 void updateDHT() {
   unsigned long now = millis();
   if (now - lastDHTRead >= DHT_INTERVAL) {
@@ -100,6 +88,7 @@ void updateDHT() {
   }
 }
 
+// ========== Read single corrected voltage ==========
 float readSingleVoltage() {
   int adcVal = analogRead(BATTERY_PIN);
   float voltage_at_adc = (adcVal * REF_VOLTAGE) / ADC_MAX;
@@ -107,12 +96,14 @@ float readSingleVoltage() {
   return mapVoltage(raw_battery);
 }
 
+// ========== Update alert pins ==========
 void updateAlertPins() {
   bool hot = (currentTemp > 35.0);
   digitalWrite(ALERT_PIN1, hot ? HIGH : LOW);
   digitalWrite(ALERT_PIN2, hot ? HIGH : LOW);
 }
 
+// ========== Display during measurement (Bx: ON + live voltage) ==========
 void showMeasurementScreen(String batteryName, float liveVoltage) {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -128,7 +119,9 @@ void showMeasurementScreen(String batteryName, float liveVoltage) {
   display.display();
 }
 
+// ========== Measure cumulative voltage for a given battery indicator ==========
 float measureCumulativeVoltage(int batteryPin, const char* name) {
+  // Turn off all pins, then turn on the selected one
   digitalWrite(B1_PIN, LOW);
   digitalWrite(B2_PIN, LOW);
   digitalWrite(B3_PIN, LOW);
@@ -142,14 +135,16 @@ float measureCumulativeVoltage(int batteryPin, const char* name) {
     float v = readSingleVoltage();
     sum += v;
     Serial.printf("%s sample %d: %.3f V\n", name, i+1, v);
+    // Show live reading on OLED
     showMeasurementScreen(String(name), v);
     delay(SAMPLE_DELAY_MS);
-    updateDHT();
+    updateDHT();          // keep temperature fresh
     updateAlertPins();
   }
   float average = sum / SAMPLES_PER_MEASURE;
   Serial.printf("%s cumulative average = %.3f V\n", name, average);
 
+  // If the average is near the "missing battery" voltage, treat as 0
   if (fabs(average - MISSING_BATTERY_VOLTAGE) <= MISSING_TOLERANCE) {
     Serial.printf("  -> Battery missing! Setting cumulative to 0.0 V\n");
     return 0.0;
@@ -157,41 +152,7 @@ float measureCumulativeVoltage(int batteryPin, const char* name) {
   return average;
 }
 
-// ========== Send data to Flask server and update dbStatus ==========
-bool sendToServer(float b1, float b2, float b3, float b4, float total, float temp) {
-  if (WiFi.status() != WL_CONNECTED) {
-    dbStatus = "WiFi Disconnected";
-    Serial.println("WiFi not connected");
-    return false;
-  }
-
-  HTTPClient http;
-  String url = String(serverUrl) + "?B1=" + String(b1, 3) +
-               "&B2=" + String(b2, 3) +
-               "&B3=" + String(b3, 3) +
-               "&B4=" + String(b4, 3) +
-               "&TotalVoltage=" + String(total, 3) +
-               "&Temp=" + String(temp, 1);
-  http.begin(url);
-  int httpCode = http.GET();
-  bool success = false;
-  if (httpCode > 0) {
-    if (httpCode == 200) {
-      dbStatus = "Stored in BMoS";
-      success = true;
-      Serial.println("Data stored successfully");
-    } else {
-      dbStatus = "Storing Failed (HTTP " + String(httpCode) + ")";
-      Serial.printf("HTTP error %d\n", httpCode);
-    }
-  } else {
-    dbStatus = "Storing Failed";
-    Serial.printf("HTTP GET failed: %s\n", http.errorToString(httpCode).c_str());
-  }
-  http.end();
-  return success;
-}
-
+// ========== Display final summary (individual voltages + net pack) ==========
 void displaySummary(float individual[], float netPack) {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -206,11 +167,10 @@ void displaySummary(float individual[], float netPack) {
   display.print(currentTemp, 1);
   display.println(" C");
   if (currentTemp > 35.0) display.println("Alert: High Temp");
-  // Show database status
-  display.print(dbStatus);
   display.display();
 }
 
+// ========== Setup ==========
 void setup() {
   Serial.begin(115200);
   pinMode(B1_PIN, OUTPUT);
@@ -241,37 +201,31 @@ void setup() {
 
   dht.begin();
   updateDHT();
-
-  Serial.print("Connecting to WiFi");
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi connected. IP address: " + WiFi.localIP().toString());
 }
 
+// ========== Main Loop ==========
 void loop() {
   float cumulative[NUM_BATTERIES];
   float individual[NUM_BATTERIES];
 
+  // ----- Measure cumulative voltages -----
   cumulative[0] = measureCumulativeVoltage(B1_PIN, "B1");
   cumulative[1] = measureCumulativeVoltage(B2_PIN, "B1+B2");
   cumulative[2] = measureCumulativeVoltage(B3_PIN, "B1+B2+B3");
   cumulative[3] = measureCumulativeVoltage(B4_PIN, "B1+B2+B3+B4");
 
+  // ----- Compute individual voltages by subtraction -----
   individual[0] = cumulative[0];
   for (int i = 1; i < NUM_BATTERIES; i++) {
     individual[i] = cumulative[i] - cumulative[i-1];
-    if (individual[i] < 0) individual[i] = 0.0;
+    if (individual[i] < 0) individual[i] = 0.0;   // clamp negative
   }
 
+  // Corrected: sum of individual voltages
   float netPack = 0;
   for (int i = 0; i < NUM_BATTERIES; i++) netPack += individual[i];
 
-  // Send data to database, dbStatus is updated inside sendToServer
-  sendToServer(individual[0], individual[1], individual[2], individual[3], netPack, currentTemp);
-
+  // Print results to Serial
   Serial.println("\n--- Individual Battery Voltages ---");
   for (int i = 0; i < NUM_BATTERIES; i++) {
     Serial.printf("B%d = %.3f V\n", i+1, individual[i]);
@@ -279,7 +233,7 @@ void loop() {
   Serial.printf("Net Pack = %.3f V\n", netPack);
   Serial.println();
 
-  // Show summary including dbStatus for 5 seconds
+  // ----- Show summary on OLED for DISPLAY_DURATION_MS -----
   unsigned long displayStart = millis();
   while (millis() - displayStart < DISPLAY_DURATION_MS) {
     updateDHT();
