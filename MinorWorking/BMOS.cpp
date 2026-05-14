@@ -3,8 +3,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
 
 // ========== OLED Settings ==========
 #define SCREEN_WIDTH  128
@@ -28,8 +26,6 @@ DHT dht(DHTPIN, DHTTYPE);
 // ========== Alert Output Pins ==========
 #define ALERT_PIN1  15
 #define ALERT_PIN2  19
-
-
 
 // ========== Measurement Constants ==========
 #define NUM_BATTERIES        4
@@ -77,9 +73,6 @@ float currentTemp = 0.0;
 float currentHum = 0.0;
 unsigned long lastDHTRead = 0;
 
-// ========== Database status message ==========
-String dbStatus = "Connecting BMoS...";
-
 void updateDHT() {
   unsigned long now = millis();
   if (now - lastDHTRead >= DHT_INTERVAL) {
@@ -110,7 +103,6 @@ void updateAlertPins() {
 
   bool veryhot = (currentTemp > 40.0);
   digitalWrite(SAFE, veryhot ? HIGH : LOW);
-
 }
 
 void showMeasurementScreen(String batteryName, float liveVoltage) {
@@ -157,41 +149,6 @@ float measureCumulativeVoltage(int batteryPin, const char* name) {
   return average;
 }
 
-// ========== Send data to Flask server and update dbStatus ==========
-bool sendToServer(float b1, float b2, float b3, float b4, float total, float temp) {
-  if (WiFi.status() != WL_CONNECTED) {
-    dbStatus = "WiFi Disconnected";
-    Serial.println("WiFi not connected");
-    return false;
-  }
-
-  HTTPClient http;
-  String url = String(serverUrl) + "?B1=" + String(b1, 3) +
-               "&B2=" + String(b2, 3) +
-               "&B3=" + String(b3, 3) +
-               "&B4=" + String(b4, 3) +
-               "&TotalVoltage=" + String(total, 3) +
-               "&Temp=" + String(temp, 1);
-  http.begin(url);
-  int httpCode = http.GET();
-  bool success = false;
-  if (httpCode > 0) {
-    if (httpCode == 200) {
-      dbStatus = "Stored in BMoS";
-      success = true;
-      Serial.println("Data stored successfully");
-    } else {
-      dbStatus = "Storing Failed (HTTP " + String(httpCode) + ")";
-      Serial.printf("HTTP error %d\n", httpCode);
-    }
-  } else {
-    dbStatus = "Storing Failed";
-    Serial.printf("HTTP GET failed: %s\n", http.errorToString(httpCode).c_str());
-  }
-  http.end();
-  return success;
-}
-
 void displaySummary(float individual[], float netPack) {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -206,8 +163,7 @@ void displaySummary(float individual[], float netPack) {
   display.print(currentTemp, 1);
   display.println(" C");
   if (currentTemp > 35.0) display.println("Alert: High Temp");
-  // Show database status
-  display.print(dbStatus);
+  // Removed database status line
   display.display();
 }
 
@@ -244,13 +200,8 @@ void setup() {
   dht.begin();
   updateDHT();
 
-  Serial.print("Connecting to WiFi");
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi connected. IP address: " + WiFi.localIP().toString());
+  // No WiFi or database initialization
+  Serial.println("System ready. Measuring batteries...");
 }
 
 void loop() {
@@ -271,8 +222,7 @@ void loop() {
   float netPack = 0;
   for (int i = 0; i < NUM_BATTERIES; i++) netPack += individual[i];
 
-  // Send data to database, dbStatus is updated inside sendToServer
-  sendToServer(individual[0], individual[1], individual[2], individual[3], netPack, currentTemp);
+  // Removed sendToServer() call
 
   Serial.println("\n--- Individual Battery Voltages ---");
   for (int i = 0; i < NUM_BATTERIES; i++) {
@@ -281,7 +231,7 @@ void loop() {
   Serial.printf("Net Pack = %.3f V\n", netPack);
   Serial.println();
 
-  // Show summary including dbStatus for 5 seconds
+  // Show summary for 5 seconds
   unsigned long displayStart = millis();
   while (millis() - displayStart < DISPLAY_DURATION_MS) {
     updateDHT();
